@@ -1,0 +1,15 @@
+{
+  "name": "medical-qrcode",
+  "version": "1.0.0",
+  "description": "A qrcode generator for international medical emergency",
+  "license": "ISC",
+  "author": "Saverio Curcio",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  }
+}
