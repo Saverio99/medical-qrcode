@@ -3,3 +3,6 @@ node_modules
 
 # nodemon config file
 nodemon.json
+
+# important! ignore .env file
+.env
