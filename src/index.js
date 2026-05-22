@@ -1,34 +1,14 @@
-var QRCode = require('qrcode');
+const express = require('express');
+const cryptRoutes = require('./routes/crypt');
+const qrcodeRoutes = require('./routes/qrcode');
+const userRegistrationRoutes = require('./routes/userRegistration');
+const port = 8080;
 
-/**
- * The function generate a QRCode SVG from some text
- * @param {text} - The text you wnat to tranform in qrCode
- * @return {utl} The QRCode SVG 
- */
-async function generateQRCodeSVG(text){
-    try {
-        const svg =  await QRCode.toDataURL(text);
-        console.log(svg + "\n");
-        return svg;   
-    } catch (error) {
-        console.log("Some error: ", error);
-        throw error;
-    }
-}
+const app = express();
+app.use(express.json());
 
-/**
- * The function generate a QRCode string from some text
- * @param {text} - The text you wnat to tranform in qrCode
- * @return {utl} The QRCode url 
- */
-async function generateQRCodeString(text){
-    try {
-        const url =  await QRCode.toString(text);
-        console.log(url);   
-    } catch (error) {
-        console.log("Some error: ", error);
-        throw error;
-    }
-}
+app.use('/crypt', cryptRoutes);
+app.use('/qrcode', qrcodeRoutes);
+app.use('/user', userRegistrationRoutes);
 
-module.exports = {generateQRCodeSVG,generateQRCodeString};
+app.listen(port, () => console.log('Server running on port 8080'));

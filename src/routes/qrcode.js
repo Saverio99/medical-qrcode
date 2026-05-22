@@ -1,12 +1,9 @@
 const express = require("express");
-const { generateQRCodeSVG } = require("..");
-const app = express();
-const port = 8090;
-
-app.use(express.json());
+const { generateQRCodeSVG } = require("../qrcode/qrcode");
+const router = express.Router();
 
 // qrcode method is a Promise so we use async/await
-app.post("/qrcode", async (req, res) => {
+router.post("/qrcode", async (req, res) => {
   try {
     if (!req.body || Object.keys(req.body).length === 0) {
       return res.status(400).json({ error: "Void body" });
@@ -23,7 +20,4 @@ app.post("/qrcode", async (req, res) => {
   }
 });
 
-// start the server
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-});
+module.exports = router;

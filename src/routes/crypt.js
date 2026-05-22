@@ -1,23 +1,20 @@
 const express = require("express");
-const { encrypt } = require("../crypt/cryptography");
+const { encrypt, decrypt } = require("../crypt/cryptography");
 const {
   storeEncryptedMessage,
   getEncryptedMessage,
 } = require("../store/store");
-const { generateQRCodeSVG } = require("..");
-const app = express();
-const port = 8080;
+const { generateQRCodeSVG } = require("../qrcode/qrcode");
+const router = express.Router();
 
-app.use(express.json());
-
-app.post("/encrypt", async (req, res) => {
+router.post("/encrypt", async (req, res) => {
   try {
     if (!req.body || Object.keys(req.body).length === 0) {
       return res.status(400).json({ error: "Void body" });
     }
 
     const encryptedMessage = encrypt(JSON.stringify(req.body));
-    const id = storeEncryptedMessage(encryptedMessage);
+    const id = await storeEncryptedMessage(encryptedMessage);
     const qrCode = await generateQRCodeSVG(id);
 
     res
@@ -33,10 +30,13 @@ app.post("/encrypt", async (req, res) => {
   }
 });
 
-app.get("/decrypt/:id", (req, res) => {
+router.get("/decrypt/:id", async (req, res) => {
   try {
-    const decryptedMessage = getEncryptedMessage(req.params.id);
-    const json = JSON.parse(decryptedMessage);
+    const encryptedData = await getEncryptedMessage(req.params.id);
+    if (!encryptedData) return res.status(404).json({ error: "Id not found" });
+
+    const decryptedData = decrypt(encryptedData);
+    const json = JSON.parse(decryptedData);
 
     res.status(200).json({ result: json });
   } catch (error) {
@@ -46,6 +46,4 @@ app.get("/decrypt/:id", (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-});
+module.exports = router;
