@@ -6,15 +6,17 @@ const {
 } = require("../store/store");
 const { generateQRCodeSVG } = require("../qrcode/qrcode");
 const router = express.Router();
+const { authenticateToken, decodeJwt } = require("../jwt/jwtManager");
 
-router.post("/encrypt", async (req, res) => {
+router.post("/encrypt", authenticateToken,  async (req, res) => {
   try {
     if (!req.body || Object.keys(req.body).length === 0) {
       return res.status(400).json({ error: "Void body" });
     }
-
+    
+    const userId = req.user.userId;
     const encryptedMessage = encrypt(JSON.stringify(req.body));
-    const id = await storeEncryptedMessage(encryptedMessage);
+    const id = await storeEncryptedMessage(userId, encryptedMessage);
     const qrCode = await generateQRCodeSVG(id);
 
     res
