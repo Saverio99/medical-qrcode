@@ -4,15 +4,17 @@ const prisma = require('./prismaClient');
 
 /**
  * The method store encryped message into DB and return the corrispondent UUID 
- * @param {message} - The message you want to store in map
+ * @param {string} userId - L'id dell'utente proprietario
+ * @param {message} message - The message you want to store in map
  * @return {UUID} The UUID of the message
  */
-async function storeEncryptedMessage(message){
+async function storeEncryptedMessage(userId, message){
     const profile = await prisma.medicalProfile.create({
         data: {
             data: message.content,
             iv: message.iv,
-            tag: message.tag
+            tag: message.tag,
+            userId: userId
         }
     });
     return profile.id;
