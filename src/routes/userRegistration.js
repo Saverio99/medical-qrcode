@@ -6,9 +6,12 @@ const prisma = require("../store/prismaClient");
 router.post("/register", async (req, res) => {
   try {
     const { username, password } = req.body;
-    const hasedPassword = await bcrypt.hash(password, 10); // non è meglio usare un salt randomico?
-    if (!hasedPassword) throw error;
-    const registrationUser = await prisma.User.create({
+    const hasedPassword = await bcrypt.hash(password, 10);
+    
+    const existing = await prisma.user.findUnique({ where: { email: username } });
+    if (existing) return res.status(409).json({ error: "Email already registered" });
+    
+    const registrationUser = await prisma.user.create({
       data: {
         email: username,
         password: hasedPassword,
@@ -18,7 +21,7 @@ router.post("/register", async (req, res) => {
     if (!registrationUser) return;
     res.status(200).send("You have registered correctly");
   } catch (error) {
-    res.status(200).send("You encountered an error: " + error);
+    res.status(500).send( {error: error.message} );
   }
 });
 
