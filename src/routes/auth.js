@@ -13,7 +13,7 @@ router.post("/register", async (req, res) => {
       where: { email: username },
     });
     if (existing)
-      return res.status(409).json({ error: "Usermame already registered" });
+      return res.status(409).json({ message: "Usermame already registered" });
 
     const registrationUser = await prisma.user.create({
       data: {
@@ -23,9 +23,9 @@ router.post("/register", async (req, res) => {
     });
 
     if (!registrationUser) return;
-    res.status(200).send("You have registered correctly");
+    res.status(200).send({ message: "You have registered correctly"});
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -35,21 +35,21 @@ router.post("/login", async (req, res) => {
     // check if user exist
     const user = await prisma.user.findUnique({ where: { email: username } });
     if (!user) {
-      res.status(404).json({ error: "User not found, please register." });
+      res.status(404).json({ message: "User not found, please register." });
       return;
     }
     // check if password received is the same password in DB
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      res.status(401).json({ error: "Invalid username or password" });
+      res.status(401).json({ message: "Invalid username or password" });
       return;
     } else {
       // generate JWT
       const token = generateJwt(user.id, user.email);
-      res.status(200).send("You are logged in!. This is your JWT: " + token);
+      res.status(200).send({ message:"You are logged in!.", token: token});
     }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
