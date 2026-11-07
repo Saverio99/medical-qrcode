@@ -17,13 +17,14 @@ router.post("/encrypt", authenticateToken,  async (req, res) => {
     const userId = req.user.userId;
     const encryptedMessage = encrypt(JSON.stringify(req.body));
     const id = await storeEncryptedMessage(userId, encryptedMessage);
-    const qrCode = await generateQRCodeSVG(id);
+    const emergencyUrl = process.env.CLIENT_URL + "emergency/" + id;
+    const qrCode = await generateQRCodeSVG(emergencyUrl);
 
     res
       .status(200)
       .json({
-        result:
-          "We are encrypted your message in the following QRCode: " + qrCode,
+        message: "We are encrypted your message in the following QRCode: ", 
+        qrCode: qrCode,
       });
   } catch (error) {
     res
